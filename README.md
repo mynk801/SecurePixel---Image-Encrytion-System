@@ -54,3 +54,64 @@ SecurePixel/
 ├── .gitignore               # Git ignore rules
 ├── requirements.txt         # Python dependencies
 └── main.py                  # Core application, auth, routing & server
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/yourusername/SecurePixel.git
+cd SecurePixel
+```
+
+**2. Set up a Virtual Environment (Recommended)**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+```
+
+**3. Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+**4. Configure Environment Variables**
+Create a `.env` file in the root directory and add the following keys. Ensure you generate a secure Fernet key (e.g., via `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`).
+```env
+SECRET_KEY=your-secure-flask-session-key
+MONGO_URI=mongodb://localhost:27017/securepixel_db
+FERNET_KEY=your-generated-fernet-key=
+```
+
+**5. Start the Database**
+Ensure your local MongoDB server is running on `localhost:27017`.
+
+---
+
+## 💻 Running the Application
+
+Start the production Waitress server by running:
+```bash
+python main.py
+```
+
+The application will be available at `http://127.0.0.1:5000`.
+
+---
+
+## 🔐 Usage Guide
+
+1. **Authenticate:** Register a new user clearance and establish a session.
+2. **Encrypt:** * Drop a large carrier image (Base) and a smaller secret image (Target).
+   * Specify Henon Map keys (`x0` and `y0`).
+   * Process and download the Stego-Image.
+3. **Decrypt:** * Switch to Decrypt mode.
+   * Drop the previously generated Stego-Image.
+   * Input the *exact* Henon Map keys used during encryption.
+   * Recover the original secret image.
+4. **Ledger:** Review your past encryption operations and securely retrieve your Henon vectors.
+
+---
+*Disclaimer: This project was built for educational and theoretical cryptography purposes.*
