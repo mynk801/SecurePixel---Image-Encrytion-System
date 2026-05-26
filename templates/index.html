@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecurePixel | Engine</title>
+    <title>SecurePixel | Cryptographic Steganography</title>
     <meta name="csrf-token" content="{{ csrf_token }}">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Space+Grotesk:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -15,151 +15,399 @@
             background-color: #ffffff;
             color: #111;
             display: flex;
+            flex-direction: column;
             height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        .left-panel {
-            width: 35%;
-            border-right: 1px solid #111;
-            padding: 4rem;
+        /* --- NAVBAR --- */
+        .navbar {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4rem;
+            border-bottom: 1px solid #f3f4f6;
         }
-
-        .right-panel {
-            width: 65%;
-            background-color: #fcfcfc;
-            padding: 4rem;
+        
+        .logo {
             display: flex;
-            flex-direction: column;
-            overflow-y: auto;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #111;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotate(45deg);
+        }
+        
+        .logo-icon::inner {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background-color: #fff;
         }
 
-        h1 {
+        .mode-toggle {
+            display: flex;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            padding: 0.25rem;
+        }
+
+        .mode-toggle span {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 50px;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+
+        .mode-toggle span.active {
+            background-color: #ffffff;
+            color: #111;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-id {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .btn-pill {
+            background-color: #111;
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .btn-pill:hover { opacity: 0.8; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 3.5rem;
-            line-height: 1;
+            line-height: 1.1;
             letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* --- MAIN WORKSPACE --- */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .drop-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
             margin-bottom: 2rem;
         }
 
-        .mode-toggle { display: flex; gap: 2rem; font-family: 'Space Grotesk', sans-serif; margin-bottom: 2rem;}
-        .mode-toggle span {
-            font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0.3;
-            transition: opacity 0.3s ease;
-        }
-        .mode-toggle span.active { opacity: 1; font-weight: 600; text-decoration: underline; }
-
         .drop-zone {
-            width: 100%;
-            padding: 3rem;
-            border: 1px dashed transparent;
-            background-color: #f0f0f0;
-            text-align: center;
+            flex: 1;
+            aspect-ratio: 16/9;
+            border: 2px dashed #e5e7eb;
+            border-radius: 16px;
+            background-color: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             position: relative;
-            margin-bottom: 1rem;
             transition: all 0.3s ease;
         }
-        .drop-zone:hover { background-color: #e0e0e0; border-color: #111; }
-        .drop-text { font-size: 1.5rem; font-weight: 300; pointer-events: none; }
-        .file-input { position: absolute; top:0; left:0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-        .doc-flow { margin-top: 2rem; border-top: 1px solid #111; padding-top: 2rem; }
-        
-        input[type="number"] {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #111;
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            padding: 0.5rem 0;
-            width: 150px;
-            margin-right: 1.5rem;
-            outline: none;
+        .drop-zone:hover {
+            border-color: #d1d5db;
+            background-color: #f3f4f6;
         }
 
-        button {
-            background: #111;
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .drop-icon {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #9ca3af;
+            background: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f3f4f6;
+        }
+
+        .drop-title {
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 0.25rem;
+        }
+
+        .drop-sub {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .arrow-divider {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #9ca3af;
+            background: #fff;
+        }
+
+        /* --- PARAMETERS & ACTIONS --- */
+        .parameters {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background: #fff;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .param-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .param-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .param-group input {
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.25rem;
+            width: 120px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            color: #111;
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+            background-color: #9ca3af; /* Default neutral state */
             color: #fff;
             border: none;
-            padding: 1rem 2rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
+            padding: 1rem 4rem;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-        button:hover { background: #333; }
 
-        .status-text { font-family: 'Courier New', monospace; font-size: 0.9rem; margin-top: 1rem; }
-        
-        #result-container { margin-top: 2rem; display: none; }
-        #result-img { max-width: 100%; border: 1px solid #111; }
-        .download-btn { display: inline-block; margin-top: 1rem; color: #111; text-decoration: underline; font-family: 'Space Grotesk', sans-serif;}
+        .action-btn.ready { background-color: #111; }
+        .action-btn.ready:hover { transform: translateY(-1px); box-shadow: 0 6px 8px -1px rgba(0,0,0,0.15); }
 
-        /* Brutalist Table Styling */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
-        th { font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: #111; border-bottom: 2px solid #111; }
-        td.mono { font-family: 'Courier New', monospace; }
+        .status-text {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* --- RESULT & LEDGER --- */
+        #result-container {
+            margin-top: 3rem;
+            text-align: center;
+            display: none;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        #result-img {
+            max-width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        #history-interface {
+            display: none;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 2rem;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        th, td { padding: 1.25rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; font-weight: 600; color: #4b5563; font-size: 0.9rem; }
+        td { font-size: 0.9rem; color: #111; }
+        td:last-child, th:last-child { border-right: none; }
+        tr:last-child td { border-bottom: none; }
+        .mono { font-family: monospace; color: #4b5563; }
+
+        /* --- FOOTER --- */
+        .app-footer {
+            padding: 1.5rem;
+            margin-top: auto; /* Pushes footer to the bottom of the screen */
+            text-align: center;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .footer-links a {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        .footer-links a:hover {
+            color: #111;
+        }
     </style>
 </head>
 <body>
 
-    <div class="left-panel">
-        <div>
-            <h1>Secure<br>Pixel.</h1>
-            <p style="font-weight: 300; opacity: 0.7; max-width: 80%;">Layered Chaos Theory & Steganography Engine.</p>
-            <br>
-            <p style="font-size: 0.8rem; font-family: 'Courier New', monospace;">User ID: {{ username }}</p>
-            <a href="/logout" style="color: #111; font-size: 0.9rem; display: block; margin-top: 0.5rem;">[ Terminate Session ]</a>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon"><div style="width:10px; height:10px; background:#fff;"></div></div>
+            SECURPXL
         </div>
+        
         <div class="mode-toggle">
-            <span id="btn-encrypt" class="active" onclick="switchMode('encrypt')">Encrypt</span>
-            <span id="btn-decrypt" onclick="switchMode('decrypt')">Decrypt</span>
+            <span id="btn-encrypt" class="active" onclick="switchMode('encrypt')">Lock</span>
+            <span id="btn-decrypt" onclick="switchMode('decrypt')">Unlock</span>
             <span id="btn-history" onclick="switchMode('history')">Ledger</span>
         </div>
+
+        <div class="nav-actions">
+            <span class="user-id">Session: {{ username }}</span>
+            <a href="/logout" class="btn-pill">Sign Out</a>
+        </div>
+    </nav>
+
+    <div class="hero" id="hero-text">
+        <h1 id="hero-title">Cryptographic Steganography.</h1>
+        <p id="hero-sub">Drag, drop, and let deterministic chaos mask your secrets into plain sight.<br>Zero visual degradation.</p>
     </div>
 
-    <div class="right-panel">
+    <main class="workspace">
         
-        <div id="engine-interface">
-            <form id="main-form">
-                <div class="drop-zone" id="drop-zone-1">
-                    <input type="file" class="file-input" id="file-1" required>
-                    <div class="drop-text" id="drop-text-1">Drop Base Carrier Image Here</div>
+        <div id="engine-interface" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <form id="main-form" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                
+                <div class="drop-container">
+                    <div class="drop-zone" id="drop-zone-1">
+                        <input type="file" class="file-input" id="file-1" required>
+                        <div class="drop-icon">🖼️</div>
+                        <div class="drop-title" id="drop-text-1">Upload Carrier Image</div>
+                        <div class="drop-sub">PNG, JPG, Max 16MB</div>
+                    </div>
+
+                    <div class="arrow-divider" id="drop-divider">→</div>
+
+                    <div class="drop-zone" id="drop-zone-2">
+                        <input type="file" class="file-input" id="file-2">
+                        <div class="drop-icon">🔒</div>
+                        <div class="drop-title" id="drop-text-2">Upload Secret Payload</div>
+                        <div class="drop-sub">Image to be hidden</div>
+                    </div>
                 </div>
 
-                <div class="drop-zone" id="drop-zone-2">
-                    <input type="file" class="file-input" id="file-2">
-                    <div class="drop-text" id="drop-text-2">Drop Target Secret Image Here</div>
+                <div class="parameters">
+                    <div class="param-group">
+                        <label>Vector x0:</label>
+                        <input type="number" id="x0" step="any" value="0.123456789" required>
+                    </div>
+                    <div class="param-group">
+                        <label>Vector y0:</label>
+                        <input type="number" id="y0" step="any" value="0.987654321" required>
+                    </div>
                 </div>
 
-                <div class="doc-flow" id="key-management">
-                    <p style="margin-bottom: 1rem; font-weight: 600;">Key Parameters (Henon Map)</p>
-                    <label>x0: <input type="number" id="x0" step="any" value="0.123456789" required></label>
-                    <label>y0: <input type="number" id="y0" step="any" value="0.987654321" required></label>
-                    <br>
-                    <button type="submit" id="process-btn">Initialize Processing</button>
-                    <div class="status-text" id="status">Status: Awaiting input...</div>
-                </div>
+                <button type="submit" id="process-btn" class="action-btn">Lock Image</button>
+                <div class="status-text" id="status"></div>
             </form>
 
             <div id="result-container">
-                <p style="font-weight: 600; margin-bottom: 1rem;">Output Generated:</p>
-                <img id="result-img" src="" alt="Output">
+                <img id="result-img" src="" alt="Processed Output">
                 <br>
-                <a id="download-link" class="download-btn" href="#" download>Download Image</a>
+                <a id="download-link" class="btn-pill" href="#" download>Download Secure File</a>
             </div>
         </div>
 
-        <div id="history-interface" style="display: none;">
-            <h2 style="font-family: 'Space Grotesk'; font-size: 2rem; border-bottom: 1px solid #111; padding-bottom: 1rem; margin-bottom: 1rem;">Encryption Ledger</h2>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 2rem;">Secure log of initialized Henon vectors and target targets.</p>
-            
+        <div id="history-interface">
             <table id="history-table">
                 <thead>
                     <tr>
@@ -174,7 +422,15 @@
             </table>
         </div>
 
-    </div>
+    </main>
+
+    <footer class="app-footer">
+        <span>Developed by Mayank</span>
+        <div class="footer-links">
+            <a href="https://github.com/mynk801" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/mynk801/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+    </footer>
 
     <script>
         let currentMode = 'encrypt';
@@ -184,7 +440,10 @@
         const file1 = document.getElementById('file-1');
         const file2 = document.getElementById('file-2');
         const dropZone2 = document.getElementById('drop-zone-2');
-        const dropText1 = document.getElementById('drop-text-1');
+        const dropDivider = document.getElementById('drop-divider');
+        const processBtn = document.getElementById('process-btn');
+        const heroTitle = document.getElementById('hero-title');
+        const heroSub = document.getElementById('hero-sub');
         
         async function switchMode(mode) {
             currentMode = mode;
@@ -195,39 +454,62 @@
             if (mode === 'history') {
                 engineInterface.style.display = 'none';
                 historyInterface.style.display = 'block';
+                heroTitle.innerText = "Encryption Ledger.";
+                heroSub.innerHTML = "Secure log of initialized Henon vectors and target targets.<br>Keys are encrypted at rest.";
                 fetchHistory();
                 return;
             }
 
-            // If switching to encrypt/decrypt
-            engineInterface.style.display = 'block';
+            engineInterface.style.display = 'flex';
             historyInterface.style.display = 'none';
 
             if (mode === 'encrypt') {
-                dropText1.innerText = 'Drop Base Carrier Image Here';
-                dropZone2.style.display = 'block';
+                heroTitle.innerText = "Cryptographic Steganography.";
+                heroSub.innerHTML = "Drag, drop, and let deterministic chaos mask your secrets into plain sight.<br>Zero visual degradation.";
+                document.getElementById('drop-text-1').innerText = 'Upload Carrier Image';
+                dropZone2.style.display = 'flex';
+                dropDivider.style.display = 'flex';
+                processBtn.innerText = 'Lock Image';
                 file2.required = true;
             } else {
-                dropText1.innerText = 'Drop Stego Image Here for Decryption';
+                heroTitle.innerText = "Payload Extraction.";
+                heroSub.innerHTML = "Upload a carrier image and provide the exact Henon parameters<br>to retrieve your encrypted payload.";
+                document.getElementById('drop-text-1').innerText = 'Upload Locked Image';
                 dropZone2.style.display = 'none';
+                dropDivider.style.display = 'none';
+                processBtn.innerText = 'Unlock Image';
                 file2.required = false;
             }
             
             file1.value = ''; file2.value = '';
+            checkFiles();
             document.getElementById('result-container').style.display = 'none';
-            document.getElementById('status').innerText = 'Status: Awaiting input...';
+            document.getElementById('status').innerText = '';
         }
+
+        // Make button "Ready" (Black) only when required files are loaded
+        function checkFiles() {
+            if (currentMode === 'encrypt' && file1.files.length > 0 && file2.files.length > 0) {
+                processBtn.classList.add('ready');
+            } else if (currentMode === 'decrypt' && file1.files.length > 0) {
+                processBtn.classList.add('ready');
+            } else {
+                processBtn.classList.remove('ready');
+            }
+        }
+        file1.addEventListener('change', checkFiles);
+        file2.addEventListener('change', checkFiles);
 
         async function fetchHistory() {
             const tbody = document.getElementById('history-body');
-            tbody.innerHTML = '<tr><td colspan="4">Fetching ledger data...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 3rem; color: #6b7280;">Fetching secure ledger data...</td></tr>';
             
             try {
                 const response = await fetch('/api/history');
                 const data = await response.json();
                 
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">No encryption history found on record.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 3rem; color: #6b7280;">No encryption history found on record.</td></tr>';
                     return;
                 }
 
@@ -243,15 +525,17 @@
                     tbody.appendChild(tr);
                 });
             } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="4" style="color:red;">Error fetching ledger.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="color:red; text-align:center; padding: 3rem;">Error fetching ledger connection.</td></tr>';
             }
         }
 
         // Handle Form Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if(!processBtn.classList.contains('ready')) return;
+
             const status = document.getElementById('status');
-            status.innerText = "Processing: 45% (Calculating Vectors...)";
+            status.innerText = "Processing vectors... Please wait.";
             document.getElementById('result-container').style.display = 'none';
             
             const formData = new FormData();
@@ -268,29 +552,28 @@
                 endpoint = '/api/decrypt';
             }
 
-            // --- CSRF FIX APPLIED HERE ---
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
             try {
                 const response = await fetch(endpoint, { 
                     method: 'POST', 
                     body: formData,
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
+                    headers: { 'X-CSRFToken': csrfToken }
                 });
                 const data = await response.json();
                 
                 if (data.output_url) {
-                    status.innerText = "Processing: 100% (Complete)";
+                    status.innerText = "Processing Complete.";
                     const img = document.getElementById('result-img');
-                    // Add timestamp to force browser to reload new image instead of using cache
                     img.src = data.output_url + "?t=" + new Date().getTime();
                     
                     const downloadLink = document.getElementById('download-link');
                     downloadLink.href = data.output_url;
                     
                     document.getElementById('result-container').style.display = 'block';
+                    
+                    // Reset files and button state after successful processing
+                    file1.value = ''; file2.value = ''; checkFiles();
                 } else {
                     status.innerText = "Error: " + (data.error || "Unknown error");
                 }

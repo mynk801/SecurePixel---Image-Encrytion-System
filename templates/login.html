@@ -5,122 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecurePixel | Auth</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Space+Grotesk:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            color: #111;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f9fafb; 
+            color: #111; 
+            display: flex; 
+            height: 100vh; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; /* Needed for the absolute footer */
         }
-
-        .left-panel {
-            width: 40%;
-            border-right: 1px solid #111;
-            padding: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background-color: #fcfcfc;
+        
+        .auth-card { 
+            background: #fff; 
+            padding: 3rem; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            width: 100%; 
+            max-width: 420px; 
+            text-align: center; 
+            border: 1px solid #e5e7eb; 
+            z-index: 10;
         }
-
-        .right-panel {
-            width: 60%;
-            padding: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 0.75rem; 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 1.75rem; 
+            font-weight: 700; 
+            margin-bottom: 2rem; 
         }
-
-        h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 4rem;
-            line-height: 1;
-            letter-spacing: -0.04em;
-            margin-bottom: 1rem;
+        
+        .logo-icon { 
+            width: 32px; 
+            height: 32px; 
+            background-color: #111; 
+            border-radius: 6px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transform: rotate(45deg); 
         }
-
-        .form-container {
-            width: 100%;
-            max-width: 400px;
+        
+        .logo-icon::inner { content: ''; width: 12px; height: 12px; background-color: #fff; }
+        
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 1rem; 
+            margin-bottom: 1rem; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 12px; 
+            font-family: 'Inter', sans-serif; 
+            font-size: 1rem; 
+            outline: none; 
+            transition: border-color 0.2s; 
+            background: #f9fafb; 
         }
-
-        .form-header {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #111;
-            padding-bottom: 1rem;
+        
+        input:focus { border-color: #111; background: #fff; }
+        
+        button { 
+            width: 100%; 
+            background: #111; 
+            color: #fff; 
+            border: none; 
+            padding: 1rem; 
+            border-radius: 50px; 
+            font-family: 'Inter', sans-serif; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: opacity 0.2s; 
+            margin-top: 0.5rem; 
         }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #111;
-            font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-            padding: 0.75rem 0;
-            margin-bottom: 1.5rem;
-            outline: none;
+        
+        button:hover { opacity: 0.8; }
+        
+        .toggle-link { 
+            display: block; 
+            margin-top: 1.5rem; 
+            font-size: 0.9rem; 
+            color: #6b7280; 
+            cursor: pointer; 
+            text-decoration: underline; 
         }
+        
+        .alert { padding: 1rem; margin-bottom: 1.5rem; font-size: 0.9rem; border-radius: 12px; border: 1px solid; }
+        .alert-error { background-color: #fef2f2; color: #991b1b; border-color: #fecaca; }
+        .alert-success { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
 
-        button {
-            width: 100%;
-            background: #111;
-            color: #fff;
-            border: none;
-            padding: 1rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover { background: #333; }
-
-        .toggle-link {
-            display: block;
-            margin-top: 1.5rem;
+        /* --- FOOTER --- */
+        .auth-footer {
+            position: absolute;
+            bottom: 1.5rem;
             text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            cursor: pointer;
-            text-decoration: underline;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
         }
-
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            font-family: 'Courier New', monospace;
-            border: 1px solid #111;
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .footer-links a {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        .footer-links a:hover {
+            color: #111;
         }
     </style>
 </head>
 <body>
+    <div class="auth-card">
+        <div class="logo">
+            <div class="logo-icon"><div style="width:10px; height:10px; background:#fff;"></div></div>
+            SECURPXL
+        </div>
 
-    <div class="left-panel">
-        <h1>Secure<br>Pixel.</h1>
-        <p style="font-weight: 300; opacity: 0.7; max-width: 80%;">Authenticate to access the encryption ledger and cryptography engine.</p>
-    </div>
-
-    <div class="right-panel">
-        <div class="form-container" id="login-form-container">
-            <h2 class="form-header">Authentication</h2>
+        <div id="login-form-container">
+            <h2 style="font-family: 'Space Grotesk'; margin-bottom: 1.5rem; font-size: 1.5rem;">Authentication</h2>
             
-            {% if error %}
-            <div class="alert" style="background-color: #fff0f0;">Error: {{ error }}</div>
-            {% endif %}
-            {% if success %}
-            <div class="alert" style="background-color: #f0fff0;">Status: {{ success }}</div>
-            {% endif %}
+            {% if error %} <div class="alert alert-error">{{ error }}</div> {% endif %}
+            {% if success %} <div class="alert alert-success">{{ success }}</div> {% endif %}
 
             <form action="/login" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit">Establish Session</button>
@@ -128,9 +151,10 @@
             <span class="toggle-link" onclick="toggleForms()">No clearance? Register here.</span>
         </div>
 
-        <div class="form-container" id="register-form-container" style="display: none;">
-            <h2 class="form-header">Initialize User</h2>
+        <div id="register-form-container" style="display: none;">
+            <h2 style="font-family: 'Space Grotesk'; margin-bottom: 1.5rem; font-size: 1.5rem;">Initialize User</h2>
             <form action="/register" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="text" name="username" placeholder="Desired Username" required>
                 <input type="password" name="password" placeholder="Create Password" required>
                 <button type="submit">Generate Credentials</button>
@@ -139,16 +163,22 @@
         </div>
     </div>
 
+    <footer class="auth-footer">
+        <span>Developed by Mayank</span>
+        <div class="footer-links">
+            <a href="https://github.com/mynk801" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/mynk801/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+    </footer>
+
     <script>
         function toggleForms() {
             const login = document.getElementById('login-form-container');
             const register = document.getElementById('register-form-container');
             if (login.style.display === 'none') {
-                login.style.display = 'block';
-                register.style.display = 'none';
+                login.style.display = 'block'; register.style.display = 'none';
             } else {
-                login.style.display = 'none';
-                register.style.display = 'block';
+                login.style.display = 'none'; register.style.display = 'block';
             }
         }
     </script>
