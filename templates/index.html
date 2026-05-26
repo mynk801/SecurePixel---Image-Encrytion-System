@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePixel | Engine</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Space+Grotesk:wght@400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            width: 35%;
+            border-right: 1px solid #111;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .right-panel {
+            width: 65%;
+            background-color: #fcfcfc;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin-bottom: 2rem;
+        }
+
+        .mode-toggle { display: flex; gap: 2rem; font-family: 'Space Grotesk', sans-serif; margin-bottom: 2rem;}
+        .mode-toggle span {
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+        .mode-toggle span.active { opacity: 1; font-weight: 600; text-decoration: underline; }
+
+        .drop-zone {
+            width: 100%;
+            padding: 3rem;
+            border: 1px dashed transparent;
+            background-color: #f0f0f0;
+            text-align: center;
+            position: relative;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .drop-zone:hover { background-color: #e0e0e0; border-color: #111; }
+        .drop-text { font-size: 1.5rem; font-weight: 300; pointer-events: none; }
+        .file-input { position: absolute; top:0; left:0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+        .doc-flow { margin-top: 2rem; border-top: 1px solid #111; padding-top: 2rem; }
+        
+        input[type="number"] {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #111;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            padding: 0.5rem 0;
+            width: 150px;
+            margin-right: 1.5rem;
+            outline: none;
+        }
+
+        button {
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 2rem;
+        }
+        button:hover { background: #333; }
+
+        .status-text { font-family: 'Courier New', monospace; font-size: 0.9rem; margin-top: 1rem; }
+        
+        #result-container { margin-top: 2rem; display: none; }
+        #result-img { max-width: 100%; border: 1px solid #111; }
+        .download-btn { display: inline-block; margin-top: 1rem; color: #111; text-decoration: underline; font-family: 'Space Grotesk', sans-serif;}
+
+        /* Brutalist Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: #111; border-bottom: 2px solid #111; }
+        td.mono { font-family: 'Courier New', monospace; }
+    </style>
+</head>
+<body>
+
+    <div class="left-panel">
+        <div>
+            <h1>Secure<br>Pixel.</h1>
+            <p style="font-weight: 300; opacity: 0.7; max-width: 80%;">Layered Chaos Theory & Steganography Engine.</p>
+            <br>
+            <p style="font-size: 0.8rem; font-family: 'Courier New', monospace;">User ID: {{ username }}</p>
+            <a href="/logout" style="color: #111; font-size: 0.9rem; display: block; margin-top: 0.5rem;">[ Terminate Session ]</a>
+        </div>
+        <div class="mode-toggle">
+            <span id="btn-encrypt" class="active" onclick="switchMode('encrypt')">Encrypt</span>
+            <span id="btn-decrypt" onclick="switchMode('decrypt')">Decrypt</span>
+            <span id="btn-history" onclick="switchMode('history')">Ledger</span>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        
+        <div id="engine-interface">
+            <form id="main-form">
+                <div class="drop-zone" id="drop-zone-1">
+                    <input type="file" class="file-input" id="file-1" required>
+                    <div class="drop-text" id="drop-text-1">Drop Base Carrier Image Here</div>
+                </div>
+
+                <div class="drop-zone" id="drop-zone-2">
+                    <input type="file" class="file-input" id="file-2">
+                    <div class="drop-text" id="drop-text-2">Drop Target Secret Image Here</div>
+                </div>
+
+                <div class="doc-flow" id="key-management">
+                    <p style="margin-bottom: 1rem; font-weight: 600;">Key Parameters (Henon Map)</p>
+                    <label>x0: <input type="number" id="x0" step="any" value="0.123456789" required></label>
+                    <label>y0: <input type="number" id="y0" step="any" value="0.987654321" required></label>
+                    <br>
+                    <button type="submit" id="process-btn">Initialize Processing</button>
+                    <div class="status-text" id="status">Status: Awaiting input...</div>
+                </div>
+            </form>
+
+            <div id="result-container">
+                <p style="font-weight: 600; margin-bottom: 1rem;">Output Generated:</p>
+                <img id="result-img" src="" alt="Output">
+                <br>
+                <a id="download-link" class="download-btn" href="#" download>Download Image</a>
+            </div>
+        </div>
+
+        <div id="history-interface" style="display: none;">
+            <h2 style="font-family: 'Space Grotesk'; font-size: 2rem; border-bottom: 1px solid #111; padding-bottom: 1rem; margin-bottom: 1rem;">Encryption Ledger</h2>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 2rem;">Secure log of initialized Henon vectors and target targets.</p>
+            
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>Date (UTC)</th>
+                        <th>Target File</th>
+                        <th>Vector (x0)</th>
+                        <th>Vector (y0)</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        let currentMode = 'encrypt';
+        const engineInterface = document.getElementById('engine-interface');
+        const historyInterface = document.getElementById('history-interface');
+        const form = document.getElementById('main-form');
+        const file1 = document.getElementById('file-1');
+        const file2 = document.getElementById('file-2');
+        const dropZone2 = document.getElementById('drop-zone-2');
+        const dropText1 = document.getElementById('drop-text-1');
+        
+        async function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-encrypt').className = mode === 'encrypt' ? 'active' : '';
+            document.getElementById('btn-decrypt').className = mode === 'decrypt' ? 'active' : '';
+            document.getElementById('btn-history').className = mode === 'history' ? 'active' : '';
+            
+            if (mode === 'history') {
+                engineInterface.style.display = 'none';
+                historyInterface.style.display = 'block';
+                fetchHistory();
+                return;
+            }
+
+            // If switching to encrypt/decrypt
+            engineInterface.style.display = 'block';
+            historyInterface.style.display = 'none';
+
+            if (mode === 'encrypt') {
+                dropText1.innerText = 'Drop Base Carrier Image Here';
+                dropZone2.style.display = 'block';
+                file2.required = true;
+            } else {
+                dropText1.innerText = 'Drop Stego Image Here for Decryption';
+                dropZone2.style.display = 'none';
+                file2.required = false;
+            }
+            
+            file1.value = ''; file2.value = '';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('status').innerText = 'Status: Awaiting input...';
+        }
+
+        async function fetchHistory() {
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '<tr><td colspan="4">Fetching ledger data...</td></tr>';
+            
+            try {
+                const response = await fetch('/api/history');
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No encryption history found on record.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.date}</td>
+                        <td class="mono">${row.target_filename}</td>
+                        <td class="mono">${row.x0}</td>
+                        <td class="mono">${row.y0}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="4" style="color:red;">Error fetching ledger.</td></tr>';
+            }
+        }
+
+        // Handle Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('status');
+            status.innerText = "Processing: 45% (Calculating Vectors...)";
+            document.getElementById('result-container').style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('x0', document.getElementById('x0').value);
+            formData.append('y0', document.getElementById('y0').value);
+            
+            let endpoint = '';
+            if (currentMode === 'encrypt') {
+                formData.append('base_image', file1.files[0]);
+                formData.append('target_image', file2.files[0]);
+                endpoint = '/api/encrypt';
+            } else {
+                formData.append('stego_image', file1.files[0]);
+                endpoint = '/api/decrypt';
+            }
+
+            // --- CSRF FIX APPLIED HERE ---
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            try {
+                const response = await fetch(endpoint, { 
+                    method: 'POST', 
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.output_url) {
+                    status.innerText = "Processing: 100% (Complete)";
+                    const img = document.getElementById('result-img');
+                    // Add timestamp to force browser to reload new image instead of using cache
+                    img.src = data.output_url + "?t=" + new Date().getTime();
+                    
+                    const downloadLink = document.getElementById('download-link');
+                    downloadLink.href = data.output_url;
+                    
+                    document.getElementById('result-container').style.display = 'block';
+                } else {
+                    status.innerText = "Error: " + (data.error || "Unknown error");
+                }
+            } catch (err) {
+                status.innerText = "Fatal Error: Failed to communicate with server.";
+                console.error(err);
+            }
+        });
+
+        // Initialize UI state
+        switchMode('encrypt');
+    </script>
+</body>
+</html>

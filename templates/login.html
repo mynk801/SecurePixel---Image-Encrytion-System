@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePixel | Auth</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Space+Grotesk:wght@400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            width: 40%;
+            border-right: 1px solid #111;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #fcfcfc;
+        }
+
+        .right-panel {
+            width: 60%;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-header {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #111;
+            padding-bottom: 1rem;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #111;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            padding: 0.75rem 0;
+            margin-bottom: 1.5rem;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: #333; }
+
+        .toggle-link {
+            display: block;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #111;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="left-panel">
+        <h1>Secure<br>Pixel.</h1>
+        <p style="font-weight: 300; opacity: 0.7; max-width: 80%;">Authenticate to access the encryption ledger and cryptography engine.</p>
+    </div>
+
+    <div class="right-panel">
+        <div class="form-container" id="login-form-container">
+            <h2 class="form-header">Authentication</h2>
+            
+            {% if error %}
+            <div class="alert" style="background-color: #fff0f0;">Error: {{ error }}</div>
+            {% endif %}
+            {% if success %}
+            <div class="alert" style="background-color: #f0fff0;">Status: {{ success }}</div>
+            {% endif %}
+
+            <form action="/login" method="POST">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Establish Session</button>
+            </form>
+            <span class="toggle-link" onclick="toggleForms()">No clearance? Register here.</span>
+        </div>
+
+        <div class="form-container" id="register-form-container" style="display: none;">
+            <h2 class="form-header">Initialize User</h2>
+            <form action="/register" method="POST">
+                <input type="text" name="username" placeholder="Desired Username" required>
+                <input type="password" name="password" placeholder="Create Password" required>
+                <button type="submit">Generate Credentials</button>
+            </form>
+            <span class="toggle-link" onclick="toggleForms()">Return to Authentication.</span>
+        </div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            const login = document.getElementById('login-form-container');
+            const register = document.getElementById('register-form-container');
+            if (login.style.display === 'none') {
+                login.style.display = 'block';
+                register.style.display = 'none';
+            } else {
+                login.style.display = 'none';
+                register.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
