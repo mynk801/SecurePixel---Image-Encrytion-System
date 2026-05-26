@@ -62,7 +62,7 @@ SecurePixel/
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/yourusername/SecurePixel.git
+git clone https://github.com/mynk801/SecurePixel---Image-Encrytion-System.git
 cd SecurePixel
 ```
 
