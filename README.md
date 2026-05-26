@@ -1,4 +1,4 @@
-## SecurePixel
+# SecurePixel
 
 **Layered Chaos Theory & Steganography Engine**
 
@@ -31,3 +31,26 @@ SecurePixel is a production-ready, full-stack image cryptography application. It
 ---
 
 ## 📂 Project Structure
+
+```text
+SecurePixel/
+│
+├── chaos_engine/
+│   ├── __init__.py
+│   └── henon.py             # Vectorized Henon Map logic
+│
+├── steganography/
+│   ├── __init__.py
+│   └── lsb.py               # 2-bit LSB dynamic hiding logic
+│
+├── static/
+│   └── uploads/             # Temporary processing directory
+│
+├── templates/
+│   ├── index.html           # Main Workspace & Ledger UI
+│   └── login.html           # Authentication UI
+│
+├── .env                     # Environment variables (Secrets)
+├── .gitignore               # Git ignore rules
+├── requirements.txt         # Python dependencies
+└── main.py                  # Core application, auth, routing & server
